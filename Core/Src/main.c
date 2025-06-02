@@ -19,6 +19,8 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "cmsis_os.h"
+#include "sensing.h"
+#include "adc_it.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -46,13 +48,27 @@ ADC_HandleTypeDef hadc1;
 UART_HandleTypeDef huart2;
 
 /* Definitions for defaultTask */
-osThreadId_t defaultTaskHandle;
-const osThreadAttr_t defaultTask_attributes = {
+osThreadId_t default_task_handle;
+const osThreadAttr_t default_task_attributes = {
   .name = "defaultTask",
   .stack_size = 128 * 4,
   .priority = (osPriority_t) osPriorityNormal,
 };
 /* USER CODE BEGIN PV */
+/* Definitions for sensing task */
+osThreadId_t sensing_task_handle;
+const osThreadAttr_t sensing_task_attributes = {
+    .name = "sensing",
+    .priority = (osPriority_t) osPriorityNormal,
+    .stack_size = 128 * 4  // Stack size in bytes
+};
+osSemaphoreId_t adc_data_ready_semaphore;
+osSemaphoreAttr_t adc_data_ready_attr = {
+    .name = "adc_data_ready",
+	.attr_bits = 0,
+	.cb_mem = NULL,
+	.cb_size = 0
+};
 
 /* USER CODE END PV */
 
@@ -104,38 +120,41 @@ int main(void)
   MX_USART2_UART_Init();
   MX_ADC1_Init();
   /* USER CODE BEGIN 2 */
-
   /* USER CODE END 2 */
 
   /* Init scheduler */
   osKernelInitialize();
 
   /* USER CODE BEGIN RTOS_MUTEX */
-  /* add mutexes, ... */
   /* USER CODE END RTOS_MUTEX */
 
   /* USER CODE BEGIN RTOS_SEMAPHORES */
-  /* add semaphores, ... */
+  adc_data_ready_semaphore = osSemaphoreNew(1, 1, &adc_data_ready_attr);
   /* USER CODE END RTOS_SEMAPHORES */
 
   /* USER CODE BEGIN RTOS_TIMERS */
-  /* start timers, add new ones, ... */
   /* USER CODE END RTOS_TIMERS */
 
   /* USER CODE BEGIN RTOS_QUEUES */
-  /* add queues, ... */
   /* USER CODE END RTOS_QUEUES */
 
   /* Create the thread(s) */
   /* creation of defaultTask */
-  defaultTaskHandle = osThreadNew(StartDefaultTask, NULL, &defaultTask_attributes);
+  default_task_handle = osThreadNew(StartDefaultTask, NULL, &default_task_attributes);
 
   /* USER CODE BEGIN RTOS_THREADS */
-  /* add threads, ... */
+
+  adc_config adc_config_attr = {
+      .high_voltage = 3.2,
+      .low_voltage = 0.1,
+      .semaphore = adc_data_ready_semaphore,
+      .hadc = &hadc1
+  };
+  init_adc_it(adc_config_attr);
+  sensing_task_handle = osThreadNew(sensing_task, NULL, &sensing_task_attributes);
   /* USER CODE END RTOS_THREADS */
 
   /* USER CODE BEGIN RTOS_EVENTS */
-  /* add events, ... */
   /* USER CODE END RTOS_EVENTS */
 
   /* Start scheduler */

@@ -1,6 +1,10 @@
 #ifndef SENSING_H
 #define SENSING_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include "cmsis_os.h"
 #include "stm32f4xx_hal.h"
 
@@ -12,5 +16,9 @@ struct sensing_arguments {
 	uint16_t step_number;
 	uint16_t delta_voltage;
 };
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif
