@@ -8,8 +8,11 @@ public:
 	static tick now() {
 		return tick(osKernelGetTickCount());
 	}
+	uint32_t elapsed_since(tick start) {
+		return (millis - start.millis) * 1000;
+	}
 private:
-	explicit tick(unint32_t millis): millis(millis) {}
+	tick(uint32_t millis): millis(millis) {}
 	uint32_t millis;
 
 };
