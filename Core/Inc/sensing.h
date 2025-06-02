@@ -10,6 +10,7 @@ struct sensing_arguments {
 	osSemaphoreId_t adc_it_semaphore;
 	GPIO_TypeDef *step_gpio;
 	uint16_t step_number;
+	uint16_t delta_voltage;
 };
 
 #endif

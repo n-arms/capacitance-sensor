@@ -63,6 +63,6 @@ void start_adc_discharging() {
 	start_adc(false);
 }
 
-uint32_t read_adc_elapsed() {
+uint16_t read_adc_elapsed() {
 	return elapsed_micros;
 }

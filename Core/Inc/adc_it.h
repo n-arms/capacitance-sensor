@@ -21,6 +21,6 @@ void start_adc_charging();
 void start_adc_discharging();
 
 // return the number of elapsed microseconds since the start of a capacitor measurement
-uint32_t read_adc_elapsed();
+uint16_t read_adc_elapsed();
 
 #endif
