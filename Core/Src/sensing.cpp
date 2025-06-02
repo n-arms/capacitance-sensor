@@ -33,6 +33,8 @@ void sensing_task(void *arguments) {
 		uint16_t elapsed_micros = read_adc_elapsed();
 		float cap_estimate = estimate_capacitance(args->delta_voltage, elapsed_micros);
 		cap_filter.update(cap_estimate, measurement_variance);
+
+		charging = !charging;
 	}
 
 	// error state
